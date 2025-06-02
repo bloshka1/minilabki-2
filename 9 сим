@@ -1,0 +1,52 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+double f(double x, double a, double b) {
+    return exp(-a * x) * cos(b * x);
+}
+
+double simpson(double lower, double upper, int n, double a, double b) {
+    double h = (upper - lower) / n;
+    double sum = f(lower, a, b) + f(upper, a, b);
+    
+    for (int i = 1; i < n; i++) {
+        double x = lower + i * h;
+        sum += (i % 2 == 0) ? 2 * f(x, a, b) : 4 * f(x, a, b);
+    }
+    
+    return h / 3 * sum;
+}
+
+int main() {
+    double a, b;
+    cout << "Введите параметр a (>0): ";
+    cin >> a;
+    cout << "Введите параметр b (>0): ";
+    cin >> b;
+
+    if (a <= 0 || b <= 0) {
+        cerr << "Ошибка: a и b должны быть > 0" << endl;
+        return 1;
+    }
+
+    double lower = 0.0;
+    double upper = 50.0 / a;
+    double eps = 1e-6;
+    int n = 1000;
+    double prev_result = simpson(lower, upper, n, a, b);
+    n *= 2;
+    double result = simpson(lower, upper, n, a, b);
+    
+    while (fabs(result - prev_result) > eps) {
+        n *= 2;
+        prev_result = result;
+        result = simpson(lower, upper, n, a, b);
+    }
+    
+    cout << "Метод Симпсона: " << setprecision(10) << result << endl;
+    
+    return 0;
+}
