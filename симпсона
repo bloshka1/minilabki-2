@@ -1,0 +1,40 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+// Функция, которую интегрируем
+double func(double x) {
+    return sin(x) / x;
+}
+
+// Метод Симпсона без задания точности
+double simpson_rule(double (*func)(double), double a, double b, int nseg) {
+    if (nseg % 2 == 1) {
+        nseg += 1;
+    }
+    double dx = (b - a) / nseg;
+    double sum = (func(a) + 4 * func(a + dx) + func(b));
+    nseg = nseg / 2;
+    for (int i = 1; i < nseg; i++) {
+        sum += 2 * func(a + (2 * i) * dx) + 4 * func(a + (2 * i + 1) * dx);
+    }
+    return sum * dx / 3;
+}
+
+int main() {
+    cout << "Используем метод Симпсона" << endl;
+    cout << "Интегрируемая функция: f(x) = sin(x)/x" << endl;
+    
+    double a = 1; // левый край отрезка интегрирования
+    double b = 10; // правый край отрезка интегрирования
+    int nseg = 1000; // начальное количество сегментов
+    
+    cout << "a = " << a << ", b = " << b << endl;
+    
+    double integral = simpson_rule(func, a, b, nseg);
+    
+    cout << "\nОтвет: I = " << integral << "\nКоличество разбиений: " << nseg << endl;
+    
+    return 0;
+}
