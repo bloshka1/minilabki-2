@@ -1,0 +1,51 @@
+include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+double f(double x, double a, double b) {
+    return exp(-a * x) * cos(b * x);
+}
+
+double trapezoidal(double lower, double upper, int n, double a, double b) {
+    double h = (upper - lower) / n;
+    double sum = 0.5 * (f(lower, a, b) + f(upper, a, b));
+    
+    for (int i = 1; i < n; i++) {
+        sum += f(lower + i * h, a, b);
+    }
+    
+    return h * sum;
+}
+
+int main() {
+    double a, b;
+    cout << "Введите параметр a (>0): ";
+    cin >> a;
+    cout << "Введите параметр b (>0): ";
+    cin >> b;
+
+    if (a <= 0 || b <= 0) {
+        cerr << "Ошибка: a и b должны быть > 0" << endl;
+        return 1;
+    }
+
+    double lower = 0.0;
+    double upper = 50.0 / a;  // Экспонента становится ничтожно малой
+    double eps = 1e-6;
+    int n = 1000;
+    double prev_result = trapezoidal(lower, upper, n, a, b);
+    n *= 2;
+    double result = trapezoidal(lower, upper, n, a, b);
+    
+    while (fabs(result - prev_result) > eps) {
+        n *= 2;
+        prev_result = result;
+        result = trapezoidal(lower, upper, n, a, b);
+    }
+    
+    cout << "Метод трапеций: " << setprecision(10) << result << endl;
+   
+    return 0;
+}
