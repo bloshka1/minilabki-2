@@ -1,0 +1,46 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+double f(double x) {
+    return 1.0 / (x * x - 4 * x + 3);
+}
+
+double simpson(double a, double b, int n) {
+    double h = (b - a) / n;
+    double sum = f(a) + f(b);
+    
+    for (int i = 1; i < n; i++) {
+        double x = a + i * h;
+        sum += (i % 2 == 0) ? 2 * f(x) : 4 * f(x);
+    }
+    
+    return h / 3 * sum;
+}
+
+int main() {
+    double eps_integral = 1e-6;  // Точность интегрирования
+    double eps_singularity = 1e-6;  // Отступ от особенности
+    
+    // Интегрируем от 0 до 1 - eps_singularity
+    double a1 = 0.0;
+    double b1 = 1.0 - eps_singularity;
+    int n1 = 1000;
+    double result1 = simpson(a1, b1, n1);
+    
+    // Интегрируем от 1 + eps_singularity до 2
+    double a2 = 1.0 + eps_singularity;
+    double b2 = 2.0;
+    int n2 = 1000;
+    double result2 = simpson(a2, b2, n2);
+    
+    double total_result = result1 + result2;
+    
+    cout << "Часть 1 (от 0 до " << b1 << "): " << result1 << endl;
+    cout << "Часть 2 (от " << a2 << " до 2): " << result2 << endl;
+    cout << "Сумма: " << setprecision(10) << total_result << endl;
+  
+    return 0;
+}
