@@ -1,0 +1,42 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+double f(double x) {
+    return log(x) / (x * x);
+}
+
+double simpson(double a, double b, int n) {
+    double h = (b - a) / n;
+    double sum = f(a) + f(b);
+    
+    for (int i = 1; i < n; i++) {
+        double x = a + i * h;
+        sum += (i % 2 == 0) ? 2 * f(x) : 4 * f(x);
+    }
+    
+    return h / 3 * sum;
+}
+
+int main() {
+    double a = 1.0;
+    double b = 1000.0;  // Практически "бесконечность"
+    double eps = 1e-6;
+    int n = 1000;       // Начальное число разбиений
+    double prev_result = simpson(a, b, n);
+    n *= 2;
+    double result = simpson(a, b, n);
+    
+    while (fabs(result - prev_result) > eps) {
+        n *= 2;
+        prev_result = result;
+        result = simpson(a, b, n);
+    }
+    
+    cout << "Метод Симпсона: " << setprecision(10) << result << endl;
+    cout << "Число разбиений: " << n << endl;
+    
+    return 0;
+}
