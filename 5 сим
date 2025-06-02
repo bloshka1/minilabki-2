@@ -1,0 +1,54 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+// Подынтегральная функция
+double f(double x) {
+    return 1.0 / (x * sqrt(3*x*x - 2*x - 1));
+}
+
+// Метод Симпсона с автоматическим выбором шага
+double simpson_integral(double a, double b, double eps) {
+    int segments = 2;
+    double integral_prev = 0.0;
+    double error = eps + 1.0; // Инициализация ошибки больше eps
+
+    while (error > eps) {
+        double h = (b - a) / segments;
+        double integral_current = 0.0;
+
+        // Вычисление интеграла для текущего числа сегментов
+        for (int i = 0; i < segments; i++) {
+            double x0 = a + i * h;
+            double x1 = x0 + h / 2;
+            double x2 = x0 + h;
+
+            integral_current += (f(x0) + 4 * f(x1) + f(x2)) * h / 6;
+        }
+
+        // Оценка ошибки (начиная со второй итерации)
+        if (segments > 2) {
+            error = fabs(integral_current - integral_prev) / 15.0;
+        }
+
+        integral_prev = integral_current;
+        segments *= 2;
+    }
+
+    return integral_prev;
+}
+
+int main() {
+    double a = 1.0 + 1e-8; // Смещение от особенности в x=1
+    double b = 2.0;
+    double eps = 1e-6;
+
+    double result = simpson_integral(a, b, eps);
+
+    cout << fixed << setprecision(8);
+    cout << "Значение интеграла: " << result << endl;
+
+    return 0;
+}
