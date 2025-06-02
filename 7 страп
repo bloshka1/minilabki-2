@@ -1,0 +1,40 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+double f(double x) {
+    return pow(x, 5) / sqrt(4 - x * x);
+}
+
+double trapezoidal(double a, double b, int n) {
+    double h = (b - a) / n;
+    double sum = 0.5 * (f(a) + f(b));
+    
+    for (int i = 1; i < n; i++) {
+        sum += f(a + i * h);
+    }
+    
+    return h * sum;
+}
+
+int main() {
+    double a = 0.0;
+    double b = 1.999999;  
+    double eps = 1e-6;
+    int n = 2;
+    double prev_result = 0.0;
+    double result = trapezoidal(a, b, n);
+    
+    while (fabs(result - prev_result) > eps) {
+        n *= 2;
+        prev_result = result;
+        result = trapezoidal(a, b, n);
+    }
+    
+    cout << "Метод трапеций: " << setprecision(10) << result << endl;
+    cout << "Число разбиений: " << n << endl;
+    
+    return 0;
+}
