@@ -1,0 +1,65 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+// Подынтегральная функция
+double f(double x) {
+    return 1.0 / ((1 + x) * sqrt(x));
+}
+
+// Метод Симпсона для конечного интервала
+double simpson_integral(double a, double b, double eps) {
+    int segments = 2;
+    double integral_prev = 0.0;
+    double error = eps + 1.0;
+
+    while (error > eps) {
+        double h = (b - a) / segments;
+        double integral_current = f(a) + f(b);
+
+        for (int i = 1; i < segments; i++) {
+            double x = a + i * h;
+            integral_current += (i % 2 == 0) ? 2.0 * f(x) : 4.0 * f(x);
+        }
+        integral_current *= h / 3.0;
+
+        if (segments > 2) {
+            error = fabs(integral_current - integral_prev) / 15.0;
+        }
+
+        integral_prev = integral_current;
+        segments *= 2;
+    }
+
+    return integral_prev;
+}
+
+// Адаптация для бесконечного предела
+double improper_simpson(double a, double eps) {
+    double b = a + 1.0;
+    double integral = 0.0;
+    double partial, threshold = eps * 100;
+
+    do {
+        partial = simpson_integral(a, b, eps/10);
+        integral += partial;
+        a = b;
+        b *= 2;
+    } while (fabs(partial) > threshold);
+
+    return integral;
+}
+
+int main() {
+    double a = 1.0;
+    double eps = 1e-6;
+
+    double result = improper_simpson(a, eps);
+
+    cout << fixed << setprecision(8);
+    cout << "Метод Симпсона: " << result << endl;
+
+    return 0;
+}
